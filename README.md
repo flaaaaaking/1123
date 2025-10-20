@@ -50,5 +50,3 @@
    Import this repository to [Vercel](https://vercel.com)  
 2. 点击 **Deploy** 即可自动发布  
    Click **Deploy** — no configuration required  
-3. 部署成功后会得到网页链接，例如：  
-   After deployment, you'll get a link such as:  
