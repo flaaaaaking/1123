@@ -1,134 +1,160 @@
-!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tarot · 纯文字抽牌</title>
-  <style>
-    :root {
-      /* Dark (默认) */
-      --bg: #0c0f13; --panel:#151922; --text:#e8ecf2; --muted:#9aa3b2; --brand:#6aa2ff; --line:#242a34;
-      --input-bg:#1b2029; --input-border:#2a3140; --placeholder:#7b8494;
-      --radius: 16px; --pad: 16px; --gap: 12px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    }
-    @media (prefers-color-scheme: light){
-      :root { --bg:#f7f8fa; --panel:#ffffff; --text:#1f2937; --muted:#6b7280; --brand:#4a6cf7; --line:#e5e7eb; --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af; }
-    }
-    body.light { --bg:#f7f8fa; --panel:#ffffff; --text:#1f2937; --muted:#6b7280; --brand:#4a6cf7; --line:#e5e7eb; --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarot · 纯文字抽牌（v2.1 Flow & Memory）</title>
+<style>
+  :root{
+    /* dark base */
+    --bg:#0c0f13; --panel:#151922; --text:#e8ecf2; --muted:#9aa3b2; --line:#242a34;
+    --input-bg:#1b2029; --input-border:#2a3140; --placeholder:#7b8494;
+    /* brand default = blue */
+    --brand:#6aa2ff; --brand-ink:#0b1324;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f7f8fa; --panel:#ffffff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+           --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af; --brand:#4a6cf7; --brand-ink:#ffffff; }
+  }
+  body.light{ --bg:#f7f8fa; --panel:#ffffff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+              --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af; }
+  body.brand-blue{ --brand:#6aa2ff; --brand-ink:#0b1324; }
+  body.brand-purple{ --brand:#b993ff; --brand-ink:#120a1a; }
+  body.brand-gold{ --brand:#f1c232; --brand-ink:#201a06; }
 
-    * { box-sizing: border-box; }
-    body { margin:0; background: var(--bg); color: var(--text); font: 14px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; }
-    .wrap { max-width: 980px; margin: 40px auto; padding: 0 16px; }
-    .h1 { font-size: 24px; font-weight: 700; letter-spacing: .3px; display:flex; align-items:center; gap:10px; }
-    .muted { color: var(--muted); }
-    .card { background: var(--panel); border:1px solid var(--line); border-radius: var(--radius); padding: calc(var(--pad) + 4px); }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
-    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap); }
-    label { display:block; font-weight:600; margin-bottom: 6px; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{max-width:1000px;margin:36px auto;padding:0 16px}
+  .h1{font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .muted{color:var(--muted)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media(max-width:820px){.row,.row-3{grid-template-columns:1fr}}
+  label{display:block;font-weight:600;margin-bottom:6px}
 
-    input[type="text"], select, textarea {
-      width: 100%; background: var(--input-bg); color: var(--text);
-      border:1px solid var(--input-border); border-radius: 12px; padding: 10px 12px; outline: none;
-    }
-    input::placeholder, textarea::placeholder { color: var(--placeholder); }
+  input[type="text"],select,textarea{width:100%;background:var(--input-bg);color:var(--text);
+    border:1px solid var(--input-border);border-radius:12px;padding:10px 12px;outline:none}
+  input::placeholder,textarea::placeholder{color:var(--placeholder)}
 
-    .btns { display:flex; gap:10px; flex-wrap: wrap; }
-    button { background: var(--input-bg); color: var(--text); border: 1px solid var(--input-border); padding: 10px 14px; border-radius: 12px; cursor: pointer; }
-    button.primary { border-color: #2b3340; }
-    button.brand { background: #162339; border-color: #2a416e; color: #d8e5ff; }
-    button:active { transform: translateY(1px); }
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  button{background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);
+    padding:10px 14px;border-radius:12px;cursor:pointer;transition:filter .12s ease, box-shadow .12s ease}
+  button:hover{ filter:brightness(1.05) }
+  button.primary{border-color:#2b3340}
+  button.accent{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  button.accent:hover{ box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent) inset }
+  button:active{transform:translateY(1px)}
 
-    .list { display:flex; flex-direction: column; gap: 10px; }
-    .item { border:1px dashed var(--input-border); border-radius: 12px; padding: 10px 12px; }
-    .mono { font-family: var(--mono); }
-    .kbd { font-family: var(--mono); background: var(--input-bg); border:1px solid var(--input-border); padding:0 6px; border-radius:6px; }
-    .hr { height:1px; background: var(--line); margin: 14px 0; }
-    .pill { display:inline-block; padding: 2px 8px; border:1px solid var(--input-border); border-radius:999px; font-size:12px; color: var(--muted); }
-    .tag { display:inline-block; padding: 2px 8px; background: #111827; border:1px solid #22314d; border-radius:999px; font-size:12px; color:#c7d7ff; }
-    .right { margin-left:auto; }
-    @media (max-width: 800px){ .row, .row-3 { grid-template-columns: 1fr; } }
-
-    .theme-btn { display:inline-flex; align-items:center; gap:6px; }
-  </style>
+  .hr{height:1px;background:var(--line);margin:14px 0}
+  .list{display:flex;flex-direction:column;gap:10px}
+  .item{border:1px dashed var(--input-border);border-radius:12px;padding:10px 12px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-size:12px;transition:filter .12s ease}
+  .pill{display:inline-block;padding:2px 8px;border:1px solid var(--input-border);border-radius:999px;font-size:12px;color:var(--muted)}
+  .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--input-bg);border:1px solid var(--input-border);padding:0 6px;border-radius:6px}
+  .right{margin-left:auto}
+</style>
 </head>
-<body>
-  <div class="wrap">
-    <div class="h1">
-      <span>Tarot · 纯文字抽牌</span>
-      <span class="pill">单文件 / 本地可开</span>
-      <span class="right"></span>
-      <button id="themeToggle" class="theme-btn" type="button" title="切换明暗主题">🌙/☀️ 主题</button>
-    </div>
-    <div class="muted" style="margin-top:6px">支持不重复抽牌、正/逆位、PPF、<b>关系盘</b>、<b>五张方案</b>与<b>十张方案</b>。可复制 Markdown、导出 CSV/JSON、<b>一键导出占卜报告</b>。</div>
-
-    <div class="hr"></div>
-
-    <section class="card" id="controls">
-      <div class="row">
-        <div>
-          <label>模式</label>
-          <select id="mode">
-            <option value="single">单张</option>
-            <option value="ppf">三张（过去-现在-未来）</option>
-            <option value="relationship">关系盘（你/对方/核心/阻碍/建议）</option>
-            <option value="five">五张方案（现状/阻碍/根源/潜力/建议）</option>
-            <option value="ten">十张方案（凯尔特十字）</option>
-          </select>
-        </div>
-        <div>
-          <label>备注（可选）</label>
-          <input id="note" type="text" placeholder="为这次占卜写一句话…" />
-        </div>
-      </div>
-      <div class="btns" style="margin-top:14px">
-        <button class="brand" id="draw" type="button">抽 牌</button>
-        <button class="primary" id="redraw" type="button">重新抽取</button>
-        <button id="reset" type="button">清空结果</button>
-      </div>
-    </section>
-
-    <div style="height:14px"></div>
-
-    <section class="card" id="result">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <div style="font-weight:700">抽牌结果</div>
-        <div class="btns">
-          <button id="copyMd" type="button">复制 Markdown</button>
-          <button id="exportReport" type="button">导出占卜报告（MD）</button>
-          <button id="exportCSV" type="button">导出 CSV</button>
-          <button id="exportJSON" type="button">导出 JSON</button>
-        </div>
-      </div>
-      <div class="hr"></div>
-      <div id="cards" class="list"></div>
-      <div class="hr"></div>
-      <details>
-        <summary class="muted">简要解释（按位）</summary>
-        <pre id="explain" class="mono" style="white-space:pre-wrap"></pre>
-      </details>
-    </section>
-
-    <div style="height:14px"></div>
-
-    <section class="card" id="history">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <div style="font-weight:700">历史记录（本地）</div>
-        <div class="btns">
-          <button id="clearHistory" type="button">清空历史</button>
-        </div>
-      </div>
-      <div class="hr"></div>
-      <div id="historyList" class="list"></div>
-    </section>
-
-    <div style="height:18px"></div>
-    <div class="muted">提示：这是本地静态页面，直接用 <span class="kbd">Chrome</span> 或 <span class="kbd">Safari</span> 打开即可。若要放到 Notion，可部署到 Vercel/Netlify 后嵌入。主题默认跟随系统，可手动覆盖。</div>
+<body class="brand-blue">
+<div class="wrap">
+  <div class="h1">
+    <span>Tarot · 纯文字抽牌（v2.1）</span>
+    <span class="pill">单文件 / 本地可开</span>
+    <span class="right"></span>
+    <select id="brandPick" title="主题主色" style="max-width:160px">
+      <option value="blue">主题色：蓝（理性）</option>
+      <option value="purple">主题色：紫（直觉）</option>
+      <option value="gold">主题色：金（力量）</option>
+    </select>
+    <button id="themeToggle" type="button">🌙/☀️ 主题</button>
   </div>
+  <div class="muted" style="margin-top:6px">不重复抽牌、永远可逆位；抽牌先仅显示牌面与正/逆，点击后显示中性释义；关键词单独开关。</div>
+
+  <div class="hr"></div>
+
+  <section class="card">
+    <div class="row-3">
+      <div>
+        <label>模式</label>
+        <select id="mode">
+          <option value="single">单张</option>
+          <option value="ppf">三张（过去-现在-未来）</option>
+          <option value="relationship">关系盘（你/对方/核心/阻碍/建议）</option>
+          <option value="five">五张（现状/阻碍/根源/潜力/建议）</option>
+          <option value="six">六芒星（现状/阻碍/助力/行动/外界/结果）</option>
+          <option value="seven">七张（主题/障碍/根源/过去/现在/未来/建议）</option>
+          <option value="ten">十张（凯尔特十字）</option>
+        </select>
+      </div>
+      <div>
+        <label>占卜分类</label>
+        <select id="category">
+          <option>情感</option><option>事业</option><option>学业</option>
+          <option>健康</option><option>财务</option><option>人际</option><option>其他</option>
+        </select>
+      </div>
+      <div>
+        <label>备注（可选）</label>
+        <input id="note" type="text" placeholder="为这次占卜写一句话…">
+      </div>
+    </div>
+    <div class="btns" style="margin-top:14px">
+      <button class="accent" id="draw" type="button">抽 牌</button>
+      <button class="primary" id="redraw" type="button">重新抽取</button>
+      <button id="reset" type="button">清空结果</button>
+    </div>
+  </section>
+
+  <div style="height:14px"></div>
+
+  <section class="card" id="result">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <div style="font-weight:700">抽牌结果</div>
+      <div class="btns">
+        <button id="toggleExplain" type="button">查看解读（中性）</button>
+        <button id="toggleKW" type="button">显示关键词</button>
+        <button id="copyMd" type="button">复制 Markdown</button>
+        <button id="exportReport" type="button">导出报告（MD）</button>
+        <button id="exportCSV" type="button">导出 CSV</button>
+        <button id="exportJSON" type="button">导出 JSON</button>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <div id="cards" class="list"></div>
+  </section>
+
+  <div style="height:14px"></div>
+
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <div style="font-weight:700">历史记录（分页 / 每页 5 条）</div>
+      <div class="btns">
+        <input id="filterKw" type="text" placeholder="按关键词/备注过滤…" style="min-width:200px">
+        <select id="filterCat">
+          <option value="">全部分类</option>
+          <option>情感</option><option>事业</option><option>学业</option>
+          <option>健康</option><option>财务</option><option>人际</option><option>其他</option>
+        </select>
+        <button id="clearHistory" type="button">清空历史</button>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <div id="historyList" class="list"></div>
+    <div class="btns" style="justify-content:flex-end">
+      <button id="prevPage" type="button">上一页</button>
+      <span class="pill" id="pageInfo">1 / 1</span>
+      <button id="nextPage" type="button">下一页</button>
+    </div>
+  </section>
+
+  <div style="height:18px"></div>
+  <div class="muted">提示：主题色（蓝/紫/金）会同时作用于明/暗模式；若未生效请强刷 <span class="kbd">Ctrl/Cmd+Shift+R</span>。</div>
+</div>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-
-  const MAJOR = [
+(function(){
+  // ---- 数据 ----
+  var MAJOR=[
     {id:0,name:"The Fool",cn:"愚者",upr:["新开始","自由","冒险"],rev:["鲁莽","犹豫","方向不明"]},
     {id:1,name:"The Magician",cn:"魔术师",upr:["意志","资源整合","显化"],rev:["操弄","分散","技巧失灵"]},
     {id:2,name:"The High Priestess",cn:"女祭司",upr:["直觉","潜意识","保留"],rev:["秘密","压抑","自欺"]},
@@ -150,181 +176,240 @@ window.addEventListener('DOMContentLoaded', () => {
     {id:18,name:"The Moon",cn:"月亮",upr:["迷雾","想象","潜伏"],rev:["明朗","清醒","疑虑散去"]},
     {id:19,name:"The Sun",cn:"太阳",upr:["清晰","成功","童真"],rev:["过曝","自满","短暂受阻"]},
     {id:20,name:"Judgement",cn:"审判",upr:["召回","觉醒","复盘"],rev:["迟疑","自责","错失召唤"]},
-    {id:21,name:"The World",cn:"世界",upr:["完成","整合","旅程终点"],rev:["未竟之事","收尾困难","边界不清"]},
+    {id:21,name:"The World",cn:"世界",upr:["完成","整合","旅程终点"],rev:["未竟之事","收尾困难","边界不清"]}
   ];
-
-  const TAGS = {
-    single: ['此刻'],
-    ppf: ['过去','现在','未来'],
-    relationship: ['你','对方','关系核心','阻碍','建议'],
-    five: ['现状','阻碍','根源','潜力','建议'],
-    ten: ['当下','挑战','潜意识/根部','显意识/表层','过去影响','近期未来','我方态度','外部环境','希望/恐惧','结果']
+  var MEANING={
+    0:{upr:"新的开端与探索的状态，重视直觉与体验；强调开放心态与未知感。",rev:"能量分散或准备不足的状态，对方向与边界的把握较弱。"},
+    1:{upr:"意志与资源被调动以达成目标的阶段，重在可行。",rev:"工具或沟通的失灵，力量未聚拢，效果不显。"},
+    2:{upr:"信息尚在潜伏期，适合观察、保留意见、等待线索出现。",rev:"隐秘与不确定增多，难以直接获取明确讯息。"},
+    3:{upr:"滋养与生长的环境，强调关系/项目的培育与扩展。",rev:"投入与产出不均衡，或过度依赖带来的停滞。"},
+    4:{upr:"结构、秩序与边界清晰，重视制度与规则。",rev:"结构僵硬或控制过强，弹性不足。"},
+    5:{upr:"遵循既有规范/传统的时期，强调学习与传承。",rev:"形式感压过实质，或对规则产生抗拒。"},
+    6:{upr:"价值对齐与连接课题被提出，面向选择。",rev:"摇摆或诱因增多，需要澄清立场与价值。"},
+    7:{upr:"向目标集中并推进的阶段，测试协调与意志。",rev:"动能受阻或方向分裂，推进效率下降。"},
+    8:{upr:"内在稳住外在，强调耐心、自律与温和的力量。",rev:"自我怀疑或压抑情绪，能量需要复位。"},
+    9:{upr:"主动抽离以观察与思考，积累洞见。",rev:"闭塞或回避外界互动，信息来源变窄。"},
+    10:{upr:"周期转折点，机会与变动并存。",rev:"时机暂不匹配或外在条件未就绪。"},
+    11:{upr:"评估与平衡的阶段，关注因果与对等。",rev:"失衡或延迟定夺，标准模糊。"},
+    12:{upr:"暂停以换视角的阶段，强调让渡与观察。",rev:"停滞感上升，难以放下既有立场。"},
+    13:{upr:"阶段性收束与更新的交界，释放旧要素。",rev:"对改变有所抗拒，旧议题反复出现。"},
+    14:{upr:"调配节律、寻找中道与稳定输出。",rev:"节奏失衡，过度或不足影响稳定性。"},
+    15:{upr:"契约、欲望与束缚课题被看见。",rev:"从束缚中抽离的迹象，关注解脱过程。"},
+    16:{upr:"结构被触发调整，真相浮出。",rev:"变化仍在累积，后续影响待观察。"},
+    17:{upr:"修复期与远景意识增强，关注恢复与方向感。",rev:"能量偏低或期待减弱，需要补给。"},
+    18:{upr:"模糊期，直觉与想象高活跃，信息需辨识。",rev:"雾散迹象，判断逐步回到清晰。"},
+    19:{upr:"清晰度与显化度上升，结果可见。",rev:"光照过强或阶段性受阻，节奏需调。"},
+    20:{upr:"回看与回应的节点，强调召回与整合。",rev:"犹豫或自责干扰回应，窗口变窄。"},
+    21:{upr:"阶段收拢、要素整合，完成度提升。",rev:"收尾不完全或边界模糊，尚需整理。"}
+  };
+  var TAGS={
+    single:["此刻"],
+    ppf:["过去","现在","未来"],
+    relationship:["你","对方","关系核心","阻碍","建议"],
+    five:["现状","阻碍","根源","潜力","建议"],
+    six:["现状","阻碍","助力","行动","外界","结果"],
+    seven:["主题","障碍","根源","过去","现在","未来","建议"],
+    ten:["当下","挑战","潜意识/根部","显意识/表层","过去影响","近期未来","我方态度","外部环境","希望/恐惧","结果"]
   };
 
-  const $ = sel => document.querySelector(sel);
-  const ts = () => new Date().toISOString().replace('T',' ').slice(0,19);
-  function sampleNoRepeat(arr, n){ if(n>arr.length) throw new Error('抽牌数量超过牌组大小'); const pool=arr.slice(),out=[]; for(let i=0;i<n;i++){ const idx=Math.floor(Math.random()*pool.length); out.push(pool[idx]); pool.splice(idx,1);} return out; }
-  function positionTags(mode){ return TAGS[mode] || TAGS.single; }
+  function q(id){return document.getElementById(id);}
+  function ts(){return new Date().toISOString().replace("T"," ").slice(0,19);}
+  function sampleNoRepeat(arr,n){ if(n>arr.length) throw new Error("数量超过牌组"); var pool=arr.slice(),out=[]; for(var i=0;i<n;i++){ var idx=Math.floor(Math.random()*pool.length); out.push(pool[idx]); pool.splice(idx,1);} return out; }
+  function positionTags(mode){ return TAGS[mode]||TAGS.single; }
 
-  function draw(mode, allowRev){
-    const n = positionTags(mode).length;
-    const cards = sampleNoRepeat(MAJOR, n).map(c=>({ ...c, reversed: allowRev ? Math.random()<0.5 : false }));
-    return { mode, allowRev, cards };
+  var SHOW_EXPLAIN=false, SHOW_KW=false, lastPack=null;
+
+  function draw(mode){
+    var n=positionTags(mode).length;
+    var cards=sampleNoRepeat(MAJOR,n).map(function(c){ return {id:c.id,name:c.name,cn:c.cn,upr:c.upr,rev:c.rev,reversed:Math.random()<0.5}; });
+    return {mode:mode,allowRev:true,cards:cards};
   }
 
-  function buildExplain(rec){
-    const tags = positionTags(rec.mode);
-    return rec.cards.map((c,i)=>{
-      const kws = (c.reversed ? c.rev : c.upr).slice(0,3).join('、') || '（无）';
-      return `- ${tags[i]}｜${c.cn}${c.reversed?'（逆位）':''} → ${kws}`;
-    }).join('\\n');
+  function neutralLine(card){
+    var pos=card.reversed?"rev":"upr";
+    var m=MEANING[card.id] ? MEANING[card.id][pos] : "";
+    return "→ 牌面释义：" + (m||"状态描述缺省");
   }
-
-  function buildSummarySentence(c){
-    const pos = c.reversed ? '逆位' : '正位';
-    const kws = (c.reversed ? c.rev : c.upr).slice(0,3);
-    if(!kws.length) return `${c.cn}（${pos}）：暂无关键信息。`;
-    return `${c.cn}（${pos}）：倾向于“${kws.join('、')}”，提示你以更稳健、清醒的方式处理当前位置的主题。`;
+  function kwLine(card){
+    var arr=card.reversed?card.rev:card.upr;
+    var s=(arr||[]).slice(0,3).join("、");
+    return s?("关键词：" + s):"";
   }
-
-  function buildReport(rec){
-    const lines = [];
-    lines.push(`# 占卜报告`);
-    lines.push(`- 时间：${rec.timestamp}`);
-    lines.push(`- 模式：${rec.mode}`);
-    lines.push(`- 允许逆位：${rec.allowRev ? '是' : '否'}`);
-    lines.push(`- 备注：${rec.note || '（无）'}`);
-    lines.push('');
-    const tags = positionTags(rec.mode);
-    lines.push('## 抽牌与解释');
-    rec.cards.forEach((c,i)=>{
-      const pos = c.reversed ? '逆位' : '正位';
-      const kws = (c.reversed ? c.rev : c.upr).slice(0,3).join('、') || '（无）';
-      const sent = buildSummarySentence(c);
-      lines.push(`- **${tags[i]}**｜**${c.cn} (${c.name})｜${pos}**`);
-      lines.push(`  - 关键词：${kws}`);
-      lines.push(`  - 简短解读：${sent}`);
-    });
-    if(rec.mode==='relationship'){
-      lines.push('');
-      lines.push('## 关系盘·建议（自动生成）');
-      lines.push('- 先识别“阻碍”牌所指向的现实问题，再按“建议”采取一个可执行小步骤（一次沟通/边界确认/规则约定）。');
-    }
-    lines.push('');
-    lines.push('---');
-    lines.push('> 本报告由本地静态页面自动生成，可粘贴到 Notion/Obsidian。');
-    return lines.join('\\n');
-  }
-
-  const KEY = 'tarot_history_v4';
-  function loadHistory(){ try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; } }
-  function saveHistory(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
-  function pushHistory(item){ const list = loadHistory(); list.unshift(item); saveHistory(list); renderHistory(); }
-  function clearHistory(){ saveHistory([]); renderHistory(); }
 
   function renderResult(pack){
-    const tags = positionTags(pack.mode);
-    const wrap = $('#cards'); wrap.innerHTML = '';
-    pack.cards.forEach((c,i)=>{
-      const div = document.createElement('div');
-      div.className = 'item';
-      const pos = c.reversed ? '逆位' : '正位';
-      const kws = (c.reversed ? c.rev : c.upr).slice(0,3).join('、');
-      div.innerHTML = `<div><span class="tag">${tags[i]}</span> 【${c.cn} (${c.name})｜${pos}】 关键词：${kws || '（无）'}</div>`;
-      wrap.appendChild(div);
-    });
-    document.getElementById('explain').textContent = buildExplain(pack);
+    var tags=positionTags(pack.mode);
+    var wrap=q("cards"); wrap.innerHTML="";
+    for(var i=0;i<pack.cards.length;i++){
+      var c=pack.cards[i];
+      var pos=c.reversed?"逆位":"正位";
+      var head='<div><span class="tag">'+tags[i]+'</span> 【'+c.cn+' ('+c.name+')｜'+pos+'】</div>';
+      var body="";
+      if(SHOW_EXPLAIN){ body+='<div style="margin-top:6px">'+neutralLine(c)+'</div>'; }
+      if(SHOW_KW){ var k=kwLine(c); if(k){ body+='<div class="muted" style="margin-top:6px">'+k+'</div>'; } }
+      var div=document.createElement("div"); div.className="item"; div.innerHTML=head+body; wrap.appendChild(div);
+    }
   }
 
+  // history (pagination + filter)
+  var HKEY="tarot_history_clean_v1", PAGE=5, CUR=1;
+  function loadHist(){ try{return JSON.parse(localStorage.getItem(HKEY)||"[]");}catch(e){return [];} }
+  function saveHist(list){ localStorage.setItem(HKEY, JSON.stringify(list)); }
+  function pushHist(item){ var l=loadHist(); l.unshift(item); saveHist(l); CUR=1; renderHistory(); }
+  function applyFilter(list){
+    var kw=(q("filterKw").value||"").trim();
+    var cat=(q("filterCat").value||"").trim();
+    return list.filter(function(r){
+      var okc=!cat||r.category===cat;
+      var blob=[r.mode,r.category,r.note].concat((r.cards||[]).map(function(c){return c.cn;})).join(" ");
+      var okk=!kw||blob.indexOf(kw)>=0;
+      return okc && okk;
+    });
+  }
   function renderHistory(){
-    const list = loadHistory();
-    const box = document.getElementById('historyList'); box.innerHTML = '';
-    if(!list.length){ box.innerHTML = '<div class="muted">暂无记录。</div>'; return; }
-    list.forEach(rec=>{
-      const div = document.createElement('div');
-      div.className = 'item';
-      const tags = positionTags(rec.mode);
-      const lines = rec.cards.map((c,i)=>`${tags[i]}｜${c.cn}${c.reversed?'(逆)':''}`).join(' | ');
-      div.innerHTML = `<div><span class="pill">${rec.timestamp}</span> <span class="pill">${rec.mode}</span> <span class="muted">${rec.note?('｜'+escapeHtml(rec.note)):' '}</span></div><div class="mono" style="margin-top:6px">${lines}</div>`;
-      box.appendChild(div);
+    var full=loadHist(), filtered=applyFilter(full), total=filtered.length;
+    var pages=Math.max(1, Math.ceil(total/PAGE));
+    CUR=Math.max(1, Math.min(CUR,pages));
+    var start=(CUR-1)*PAGE, slice=filtered.slice(start,start+PAGE);
+
+    var box=q("historyList"); box.innerHTML="";
+    if(!slice.length){ box.innerHTML='<div class="muted" style="text-align:center;opacity:.8">暂无记录。</div>'; }
+    for(var i=0;i<slice.length;i++){
+      var rec=slice[i], tags=positionTags(rec.mode);
+      var lines=rec.cards.map(function(c,idx){ return tags[idx]+"｜"+c.cn+(c.reversed?"(逆)":""); }).join(" | ");
+      var html='<div><span class="pill">'+rec.timestamp+'</span> <span class="pill">'+rec.mode+'</span> <span class="pill">'+(rec.category||"")+'</span> <span class="muted">'+(rec.note?("｜🗒️ "+rec.note):" ")+'</span></div><div style="margin-top:6px">'+lines+'</div>';
+      var d=document.createElement("div"); d.className="item"; d.innerHTML=html; box.appendChild(d);
+    }
+    q("pageInfo").textContent=(pages?CUR:0)+" / "+pages;
+  }
+
+  function toMD(rec){
+    var tags=positionTags(rec.mode);
+    var head="### 抽牌结果（"+rec.timestamp+"）\\n- 模式："+rec.mode+"｜分类："+rec.category+"\\n- 备注："+(rec.note||"（无）");
+    var lines=rec.cards.map(function(c,i){
+      var core="- "+tags[i]+"｜"+c.cn+(c.reversed?"（逆位）":"");
+      var neu="  "+neutralLine(c);
+      var kw=SHOW_KW?("  - "+kwLine(c)):"";
+      return core+"\\n"+neu+(kw?("\\n"+kw):"");
     });
+    return head+"\\n"+lines.join("\\n");
+  }
+  function download(name,text,mime){
+    var a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([text],{type:mime||"text/markdown;charset=utf-8"}));
+    a.download=name; a.click(); URL.revokeObjectURL(a.href);
   }
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, function(m){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
-    });
+  // 清空历史（修复：确认 + 立刻重绘 + 友好提示）
+  function clearAllHistory(){
+    if (!confirm("确认清空所有历史记录吗？此操作不可恢复。")) return;
+    localStorage.removeItem(HKEY);
+    renderHistory();
+    var box = q("historyList"); if (box) box.innerHTML = '<div class="muted" style="text-align:center;opacity:.8">🗑️ 历史记录已清空</div>';
+    var info = q("pageInfo"); if (info) info.textContent = '0 / 1';
   }
 
-  function toMarkdown(rec){
-    const tags = positionTags(rec.mode);
-    const head = `### 抽牌结果（${rec.timestamp}）\n- 模式：${rec.mode}｜允许逆位：${rec.allowRev?'是':'否'}\n- 备注：${rec.note||'（无）'}`;
-    const lines = rec.cards.map((c,i)=>`- ${tags[i]}｜${c.cn}${c.reversed?'（逆位）':''}｜关键词：${(c.reversed?c.rev:c.upr).slice(0,3).join('、')}`);
-    return head + "\n" + lines.join("\n");
+  // 主题与主色
+  function applyBrandClass(val){
+    document.body.classList.remove("brand-blue","brand-purple","brand-gold");
+    document.body.classList.add("brand-"+val);
+    localStorage.setItem("tarot_brand",val);
   }
-
-  function download(filename, text, mime='text/markdown;charset=utf-8'){
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([text], {type: mime}));
-    a.download = filename; a.click(); URL.revokeObjectURL(a.href);
-  }
-
-  function exportCSV(){
-    const list = loadHistory(); if(!list.length) return alert('暂无可导出的历史。');
-    const header = ['timestamp','mode','allowReversed','cards','note'];
-    const rows = list.map(r=>{
-      const tags = positionTags(r.mode);
-      const cs = r.cards.map((c,i)=>`${tags[i]}:${c.cn}${c.reversed?'(逆)':''}`).join(' / ');
-      return [r.timestamp, r.mode, r.allowRev?'Y':'N', cs, (r.note||'')].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
-    });
-    download('tarot_history.csv', header.join(',')+'\n'+rows.join('\n'), 'text/csv;charset=utf-8');
-  }
-
-  function exportJSON(){
-    const list = loadHistory(); if(!list.length) return alert('暂无可导出的历史。');
-    download('tarot_history.json', JSON.stringify(list, null, 2), 'application/json');
-  }
-
-  function exportReport(){
-    if(!lastPack) return alert('尚无结果。');
-    const md = buildReport(lastPack);
-    download(`Tarot_Report_${lastPack.timestamp.replace(/[: ]/g,'-')}.md`, md);
-  }
-
-  const THEME_KEY = 'tarot_theme';
-  function applyStoredTheme(){
-    const t = localStorage.getItem(THEME_KEY);
-    if(t==='light') document.body.classList.add('light');
-    if(t==='dark') document.body.classList.remove('light');
+  function loadBrand(){
+    var v=localStorage.getItem("tarot_brand")||"blue";
+    q("brandPick").value=v; applyBrandClass(v);
   }
   function toggleTheme(){
-    const isLight = document.body.classList.toggle('light');
-    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+    var light=document.body.classList.toggle("light");
+    localStorage.setItem("tarot_theme", light?"light":"dark");
+    q("themeToggle").textContent = light ? "☀️/🌙 主题" : "🌙/☀️ 主题";
+  }
+  function loadTheme(){
+    var t=localStorage.getItem("tarot_theme");
+    if(t==="light"){ document.body.classList.add("light"); q("themeToggle").textContent="☀️/🌙 主题"; }
   }
 
-  let lastPack = null;
+  // 记住上次分类
+  function initCategoryMemory(){
+    var catSel = q("category");
+    var lastCat = localStorage.getItem("tarot_last_cat");
+    if (lastCat) catSel.value = lastCat;
+    catSel.addEventListener("change", function(e){
+      localStorage.setItem("tarot_last_cat", e.target.value);
+    });
+  }
+
+  // actions
   function doDraw(){
-    const mode = document.getElementById('mode').value;
-    const allowRev = true;
-    const note = document.getElementById('note').value.trim();
-    const pack = draw(mode, allowRev);
-    lastPack = { ...pack, timestamp: ts(), note };
-    renderResult(pack); pushHistory(lastPack);
+    var mode=q("mode").value, note=q("note").value.trim(), category=q("category").value;
+    var pack=draw(mode);
+    lastPack={mode:mode, allowRev:true, cards:pack.cards, timestamp:ts(), note:note, category:category};
+    renderResult(pack); pushHist(lastPack);
   }
 
-  applyStoredTheme();
-  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-  document.getElementById('draw').addEventListener('click', doDraw);
-  document.getElementById('redraw').addEventListener('click', doDraw);
-  document.getElementById('reset').addEventListener('click', ()=>{ document.getElementById('cards').innerHTML=''; document.getElementById('explain').textContent=''; });
-  document.getElementById('clearHistory').addEventListener('click', ()=>{ if(confirm('确认清空本地历史？')) clearHistory(); });
-  document.getElementById('copyMd').addEventListener('click', ()=>{ if(!lastPack) return alert('尚无结果。'); const md = toMarkdown(lastPack); navigator.clipboard.writeText(md).then(()=>alert('已复制 Markdown')).catch(()=>alert('复制失败')); });
-  document.getElementById('exportCSV').addEventListener('click', exportCSV);
-  document.getElementById('exportJSON').addEventListener('click', exportJSON);
-  document.getElementById('exportReport').addEventListener('click', exportReport);
+  // bind
+  window.addEventListener("DOMContentLoaded", function(){
+    try{
+      loadTheme(); loadBrand(); initCategoryMemory();
 
-  renderHistory();
-});
+      q("brandPick").addEventListener("change", function(e){ applyBrandClass(e.target.value); });
+      q("themeToggle").addEventListener("click", toggleTheme);
+
+      q("draw").addEventListener("click", doDraw);
+      q("redraw").addEventListener("click", doDraw);
+      q("reset").addEventListener("click", function(){ q("cards").innerHTML=""; });
+
+      q("toggleExplain").addEventListener("click", function(){ 
+        SHOW_EXPLAIN=!SHOW_EXPLAIN; 
+        this.textContent=SHOW_EXPLAIN?"隐藏解读":"查看解读（中性）"; 
+        renderResult({mode:q("mode").value, cards:lastPack?lastPack.cards:[]}); 
+      });
+      q("toggleKW").addEventListener("click", function(){ 
+        SHOW_KW=!SHOW_KW; 
+        this.textContent=SHOW_KW?"隐藏关键词":"显示关键词"; 
+        renderResult({mode:q("mode").value, cards:lastPack?lastPack.cards:[]}); 
+      });
+
+      q("copyMd").addEventListener("click", function(){ 
+        if(!lastPack) return alert("尚无结果。"); 
+        var md=toMD(lastPack); 
+        navigator.clipboard.writeText(md).then(function(){alert("已复制 Markdown")}).catch(function(){alert("复制失败")}); 
+      });
+      q("exportReport").addEventListener("click", function(){
+        if(!lastPack) return alert("尚无结果。");
+        var name = "Tarot_"+ (lastPack.category||"未分类") +"_"+ lastPack.timestamp.replace(/[: ]/g,"-") + ".md";
+        download(name, toMD(lastPack));
+      });
+      q("exportCSV").addEventListener("click", function(){
+        var list=applyFilter(loadHist()); if(!list.length) return alert("暂无可导出的历史。");
+        var head=["timestamp","mode","category","allowReversed","cards","note"];
+        var rows=list.map(function(r){
+          var tags=positionTags(r.mode);
+          var cs=r.cards.map(function(c,i){return tags[i]+":"+c.cn+(c.reversed?"(逆)":"");}).join(" / ");
+          return [r.timestamp,r.mode,r.category,"Y",cs,r.note||""].map(function(v){return '\"'+String(v).replace(/\"/g,'\"\"')+'\"';}).join(",");
+        });
+        download("tarot_history.csv", head.join(",")+"\n"+rows.join("\n"), "text/csv;charset=utf-8");
+      });
+      q("exportJSON").addEventListener("click", function(){
+        var list=applyFilter(loadHist()); if(!list.length) return alert("暂无可导出的历史。");
+        download("tarot_history.json", JSON.stringify(list,null,2), "application/json");
+      });
+
+      q("prevPage").addEventListener("click", function(){ CUR=Math.max(1, CUR-1); renderHistory(); });
+      q("nextPage").addEventListener("click", function(){ CUR=CUR+1; renderHistory(); });
+      q("filterKw").addEventListener("input", function(){ CUR=1; renderHistory(); });
+      q("filterCat").addEventListener("change", function(){ CUR=1; renderHistory(); });
+
+      // 修复：清空历史按钮绑定
+      q("clearHistory").addEventListener("click", clearAllHistory);
+
+      renderHistory();
+    }catch(err){
+      alert("初始化错误: "+err.message);
+      console.error(err);
+    }
+  });
+})();
 </script>
 </body>
 </html>
+
