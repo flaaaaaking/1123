@@ -3,77 +3,108 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Noetica · Story Tarot (R17x)</title>
+<title>Story Tarot · R17x.2</title>
 <style>
   :root{
-    --bg:#0c0f13; --panel:#151922; --text:#e8ecf2; --muted:#9aa3b2; --line:#242a34;
+    --bg:#0c0f13; --panel:#151922; --text:#e8ecf2; --muted:#a0a6b4; --line:#242a34;
     --input-bg:#1b2029; --input-border:#2a3140; --placeholder:#7b8494;
     --brand:#6aa2ff; --brand-ink:#0b1324;
+    --shadow: 0 2px 8px rgba(0,0,0,.18);
   }
   @media (prefers-color-scheme: light){
     :root{ --bg:#f7f8fa; --panel:#ffffff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
-           --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af; --brand:#4a6cf7; --brand-ink:#ffffff; }
+           --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af;
+           --brand:#4a6cf7; --brand-ink:#ffffff; --shadow:0 2px 10px rgba(0,0,0,.06);}
   }
   body.light{ --bg:#f7f8fa; --panel:#ffffff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
-              --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af; }
+              --input-bg:#f1f3f5; --input-border:#d1d5db; --placeholder:#9ca3af; --shadow:0 2px 10px rgba(0,0,0,.06);}
   body.brand-blue{ --brand:#6aa2ff; --brand-ink:#0b1324; }
   body.brand-purple{ --brand:#b993ff; --brand-ink:#120a1a; }
   body.brand-gold{ --brand:#f1c232; --brand-ink:#201a06; }
 
+  /* 背景渐变（仅深色下更明显） */
+  body:not(.light).brand-purple{ background:linear-gradient(180deg, #0f0b17 0%, #14121c 40%, #0c0f13 100%); }
+  body:not(.light).brand-gold{ background:linear-gradient(180deg, #0f0d08 0%, #171207 40%, #0c0f13 100%); }
+
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  .wrap{max-width:1000px;margin:36px auto;padding:0 16px}
-  .h1{font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px}
+  html,body{max-width:100%;overflow-x:hidden}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.8 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{max-width:980px;margin:32px auto;padding:0 16px}
+  .header{display:flex;align-items:center;gap:10px}
+  .title{font-size:22px;font-weight:800}
   .muted{color:var(--muted)}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
   .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-  @media(max-width:820px){.row-3{grid-template-columns:1fr}}
-  label{display:block;font-weight:600;margin-bottom:6px}
+  @media(max-width:840px){.row-3{grid-template-columns:1fr}}
+  label{display:block;font-weight:650;margin-bottom:6px}
+  .hint{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:999px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--muted);font-size:12px;cursor:help;margin-left:6px}
 
   input[type="text"],select,textarea{width:100%;background:var(--input-bg);color:var(--text);
     border:1px solid var(--input-border);border-radius:12px;padding:10px 12px;outline:none}
   input::placeholder,textarea::placeholder{color:var(--placeholder)}
+  textarea{min-height:68px;resize:vertical}
 
   .btns{display:flex;gap:10px;flex-wrap:wrap}
   button{background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);
-    padding:10px 14px;border-radius:12px;cursor:pointer;transition:filter .12s ease, box-shadow .12s ease}
-  button:hover{ filter:brightness(1.05) }
-  button.primary{border-color:#2b3340}
-  button.accent{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
-  button.accent:hover{ box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent) inset }
+    padding:10px 14px;border-radius:12px;cursor:pointer;transition:filter .12s ease, box-shadow .12s ease, transform .02s}
+  button:hover{ filter:brightness(1.05) drop-shadow(0 0 0 rgba(0,0,0,0)); box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 26%, transparent) inset }
   button:active{transform:translateY(1px)}
+  .primary{border-color:#2b3340}
+  .accent{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .accent:hover{ box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent) inset }
 
   .hr{height:1px;background:var(--line);margin:14px 0}
   .list{display:flex;flex-direction:column;gap:10px}
-  .item{border:1px dashed var(--input-border);border-radius:12px;padding:10px 12px}
+  .item{border:1px dashed var(--input-border);border-radius:12px;padding:10px 12px;animation:fade .35s ease}
+  .item:hover{background:color-mix(in srgb, var(--input-bg) 92%, transparent)}
   .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-size:12px}
   .pill{display:inline-block;padding:2px 8px;border:1px solid var(--input-border);border-radius:999px;font-size:12px;color:var(--muted)}
   .kbd{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--input-bg);border:1px solid var(--input-border);padding:0 6px;border-radius:6px}
   .right{margin-left:auto}
-  .story{white-space:pre-wrap; line-height:1.7}
+  .story{white-space:pre-wrap; line-height:1.85; animation:fade .4s ease}
+  .banner{display:none;margin:10px 0;padding:10px 12px;border-radius:12px;border:1px dashed var(--input-border);color:var(--muted)}
+  .banner.show{display:block;animation:fade .35s ease}
+  .toast{position:fixed;top:14px;right:14px;background:var(--panel);color:var(--text);border:1px solid var(--input-border);border-radius:12px;padding:8px 12px;opacity:0;transition:opacity .35s ease;z-index:9999;box-shadow:var(--shadow)}
+  .fade-in{animation:fade .35s ease}
+  @keyframes fade{from{opacity:.001;transform:translateY(2px)} to{opacity:1;transform:translateY(0)}}
+
+  /* 导出菜单 */
+  .menu{position:relative;display:inline-block}
+  .menu .menu-btn{min-width:120px}
+  .menu .menu-pop{position:absolute;right:0;top:calc(100% + 6px);background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:210px;box-shadow:var(--shadow);display:none;padding:6px}
+  .menu.show .menu-pop{display:block;animation:fade .2s ease}
+  .menu .menu-pop button{width:100%;text-align:left}
+
+  /* 分页禁用态 */
+  .disabled{opacity:.45;pointer-events:none}
+
+  /* Notion嵌入阅读宽度优化 */
+  #storyBox{max-width:720px}
 </style>
 </head>
 <body class="brand-blue">
 <div class="wrap">
-  <div class="h1">
-    <span>Noetica · Story Tarot (R17x)</span>
-    <span class="pill">单文件 / 本地可开 / 可嵌入 Notion</span>
+  <div class="header">
+    <div class="title">Story Tarot</div>
+    <span class="pill">R17x.2</span>
     <span class="right"></span>
     <select id="brandPick" title="主题主色" style="max-width:160px">
       <option value="blue">主题色：蓝（理性）</option>
       <option value="purple">主题色：紫（直觉）</option>
       <option value="gold">主题色：金（力量）</option>
     </select>
-    <button id="themeToggle" type="button">🌙/☀️ 主题</button>
+    <button id="themeToggle" type="button" title="切换明/暗">🌙/☀️ 主题</button>
   </div>
-  <div class="muted" style="margin-top:6px">默认仅显示牌名与正/逆；点击“查看解读（中性）”再显示释义；关键词与故事模式独立开关。</div>
+  <div class="muted" style="margin-top:6px">默认仅显示牌面与正/逆；点击“查看解读（中性）”再显示释义；关键词与故事模式独立开关。</div>
 
   <div class="hr"></div>
 
   <section class="card">
     <div class="row-3">
       <div>
-        <label>模式</label>
+        <label>模式
+          <span class="hint" title="单张：此刻能量\n三张：过去/现在/未来\n关系盘：你/对方/核心/阻碍/建议\n六芒星/十字：更完整结构">?</span>
+        </label>
         <select id="mode">
           <option value="single">单张</option>
           <option value="ppf">三张（过去-现在-未来）</option>
@@ -93,13 +124,14 @@
       </div>
       <div>
         <label>备注（可选）</label>
-        <input id="note" type="text" placeholder="为这次占卜写一句话…">
+        <textarea id="note" placeholder="写下此刻的情境/问题或一句心情…"></textarea>
       </div>
     </div>
     <div class="btns" style="margin-top:14px">
       <button class="accent" id="draw" type="button">抽 牌</button>
       <button class="primary" id="redraw" type="button">重新抽取</button>
       <button id="reset" type="button">清空结果</button>
+      <span id="drawBanner" class="banner">🃏 已抽出牌面，点击下方“查看解读（中性）”或“展开故事模式”。</span>
     </div>
   </section>
 
@@ -111,12 +143,22 @@
       <div class="btns">
         <button id="toggleExplain" type="button">查看解读（中性）</button>
         <button id="toggleKW" type="button">显示关键词</button>
+        <select id="tonePick" title="故事语气" style="min-width:120px">
+          <option value="calm">🧊 冷静</option>
+          <option value="poetic">🎭 文艺</option>
+          <option value="fiery">🔥 激情</option>
+        </select>
         <button id="storyBtn" type="button">展开故事模式</button>
-        <button id="copyStory" type="button">复制故事</button>
-        <button id="copyMd" type="button">复制 Markdown</button>
-        <button id="exportReport" type="button">导出报告（MD）</button>
-        <button id="exportCSV" type="button">导出 CSV</button>
-        <button id="exportJSON" type="button">导出 JSON</button>
+        <div class="menu" id="exportMenu">
+          <button class="menu-btn" type="button">📤 导出 / 复制</button>
+          <div class="menu-pop">
+            <button id="copyStory" type="button">复制故事文本</button>
+            <button id="copyMd" type="button">复制 Markdown</button>
+            <button id="exportReport" type="button">导出报告（MD）</button>
+            <button id="exportCSV" type="button">导出 CSV</button>
+            <button id="exportJSON" type="button">导出 JSON</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="hr"></div>
@@ -131,7 +173,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
       <div style="font-weight:700">历史记录（分页 / 每页 5 条）</div>
       <div class="btns">
-        <input id="filterKw" type="text" placeholder="按关键词/备注过滤…" style="min-width:200px">
+        <input id="filterKw" type="text" placeholder="按关键词/备注过滤…" style="min-width:220px">
         <select id="filterCat">
           <option value="">全部分类</option>
           <option>情感</option><option>事业</option><option>学业</option>
@@ -142,7 +184,7 @@
     </div>
     <div class="hr"></div>
     <div id="historyList" class="list"></div>
-    <div class="btns" style="justify-content:flex-end">
+    <div class="btns" style="justify-content:center">
       <button id="prevPage" type="button">上一页</button>
       <span class="pill" id="pageInfo">1 / 1</span>
       <button id="nextPage" type="button">下一页</button>
@@ -180,9 +222,7 @@
     {id:20,name:"Judgement",cn:"审判",upr:["召回","觉醒","复盘"],rev:["迟疑","自责","错失召唤"], tag:["closure"]},
     {id:21,name:"The World",cn:"世界",upr:["完成","整合","旅程终点"],rev:["未竟之事","收尾困难","边界不清"], tag:["closure"]}
   ];
-
-  // 中性释义（保持非导向）
-  var MEANING={
+  var MEANING={ /* 中性释义（保持非导向） */
     0:{upr:"新的开端与探索的状态，重视直觉与体验；强调开放心态与未知感。",rev:"能量分散或准备不足的状态，对方向与边界的把握较弱。"},
     1:{upr:"意志与资源被调动以达成目标的阶段，重在可行。",rev:"工具或沟通的失灵，力量未聚拢，效果不显。"},
     2:{upr:"信息尚在潜伏期，适合观察、保留意见、等待线索出现。",rev:"隐秘与不确定增多，难以直接获取明确讯息。"},
@@ -206,7 +246,6 @@
     20:{upr:"回看与回应的节点，强调召回与整合。",rev:"犹豫或自责干扰回应，窗口变窄。"},
     21:{upr:"阶段收拢、要素整合，完成度提升。",rev:"收尾不完全或边界模糊，尚需整理。"}
   };
-
   var TAGS={
     single:["此刻"],
     ppf:["过去","现在","未来"],
@@ -222,6 +261,7 @@
   function ts(){return new Date().toISOString().replace("T"," ").slice(0,19);}
   function sampleNoRepeat(arr,n){ if(n>arr.length) throw new Error("数量超过牌组"); var pool=arr.slice(),out=[]; for(var i=0;i<n;i++){ var idx=Math.floor(Math.random()*pool.length); out.push(pool[idx]); pool.splice(idx,1);} return out; }
   function positionTags(mode){ return TAGS[mode]||TAGS.single; }
+  function toast(msg){ var t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); requestAnimationFrame(()=>t.style.opacity=1); setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),350);},2000); }
 
   // ====== 状态 ======
   var SHOW_EXPLAIN=false, SHOW_KW=false, lastPack=null;
@@ -245,6 +285,9 @@
     var s=(arr||[]).slice(0,3).join("、");
     return s?("关键词：" + s):"";
   }
+  function tagIcon(card){
+    var t=(card.tag||[])[0]; if(t==="emotion") return "💭"; if(t==="action") return "⚙️"; if(t==="cognition") return "🧩"; if(t==="closure") return "🌙"; return "🔹";
+  }
 
   function renderResult(pack){
     var tags=positionTags(pack.mode);
@@ -252,7 +295,7 @@
     for(var i=0;i<pack.cards.length;i++){
       var c=pack.cards[i];
       var pos=c.reversed?"逆位":"正位";
-      var head='<div><span class="tag">'+tags[i]+'</span> 【'+c.cn+' ('+c.name+')｜'+pos+'】</div>';
+      var head='<div><span class="tag">'+tags[i]+'</span> 【'+tagIcon(c)+' '+c.cn+' ('+c.name+')｜'+pos+'】</div>';
       var body="";
       if(SHOW_EXPLAIN){ body+='<div style="margin-top:6px">'+neutralLine(c)+'</div>'; }
       if(SHOW_KW){ var k=kwLine(c); if(k){ body+='<div class="muted" style="margin-top:6px">'+k+'</div>'; } }
@@ -293,6 +336,8 @@
       var d=document.createElement("div"); d.className="item"; d.innerHTML=html; box.appendChild(d);
     }
     q("pageInfo").textContent=(pages?CUR:0)+" / "+pages;
+    q("prevPage").classList.toggle("disabled", CUR<=1);
+    q("nextPage").classList.toggle("disabled", CUR>=pages);
   }
 
   // ====== 导出 ======
@@ -344,17 +389,15 @@
     });
   }
 
-  // ====== 故事引擎 ======
+  // ====== 故事引擎（含语气） ======
   function trendOf(cards){
     var score={emotion:0, action:0, cognition:0, closure:0};
     cards.forEach(function(c){ (c.tag||[]).forEach(function(t){ score[t]=(score[t]||0)+1; }); });
-    // 主导 → 次要
     var order=Object.keys(score).sort(function(a,b){return score[b]-score[a]});
     return {score:score, order:order};
   }
   function roleName(mode, idx){ return (positionTags(mode)[idx]||("位置"+(idx+1))); }
 
-  // 类别化背景模板
   var BG={
     "情感":"你正在处理一段关系的阶段性课题：不是非黑即白，而是在找‘怎样靠近更舒服’的方式。",
     "事业":"你处在节奏调整期：目标与方法的关系正在被重新摆放，需要一点试错空间。",
@@ -365,28 +408,38 @@
     "其他":"你正面对一个需要被分步拆解的主题：先看清，再决定。"
   };
 
-  function sensoryLine(card){
-    // 轻量感知化措辞（非指令、非强导向）
+  // 语气映射
+  function sensoryLine(card, tone){
     var pos = card.reversed ? "逆位" : "正位";
-    var tone = card.reversed
-      ? "像被按下的暂停键，能量在回收与修正之间。"
-      : "像呼吸变得平稳，事物在可控范围内缓慢显影。";
-    return card.cn+"（"+pos+"）："+tone;
+    var base = card.reversed ? "像被按下的暂停键，能量在回收与修正之间。" : "像呼吸逐步平稳，事物在可控范围内显影。";
+    if(tone==="poetic") base = card.reversed ? "像潮水回撤之前的静默，情绪在暗处缓慢重排。" : "像雾后初晴的空气，细微之处在光里被看见。";
+    if(tone==="fiery") base = card.reversed ? "能量被堵在弯道，得先松开刹车再谈加速。" : "抓住当下的窗口，趁势推进会更顺。";
+    return card.cn+"（"+pos+"）："+base;
   }
-
-  function directionLine(card){
-    // 基于主标签给一个“关注点”，保持克制
+  function directionLine(card, tone){
     var dom = (card.tag||[])[0]||"cognition";
-    var map = {
+    var mapCalm = {
       emotion:"这张牌把注意力放在‘感受如何被看见’上。",
       action:"这张牌把注意力放在‘节奏与推进’上。",
       cognition:"这张牌把注意力放在‘观察与判断’上。",
       closure:"这张牌把注意力放在‘阶段收束与更新’上。"
     };
-    return map[dom];
+    var mapPoetic = {
+      emotion:"它邀请你倾听情绪的边缘音，那里常常是答案的入口。",
+      action:"它提醒节律与力量要并行，像心跳一样有序。",
+      cognition:"它让思考先于动作，像点灯之后再走路。",
+      closure:"它提议与你的终点握手，然后把脚步交给新的方向。"
+    };
+    var mapFiery = {
+      emotion:"请把真实说出来，关系会因此更清楚。",
+      action:"把第一步拆小、今天就动手。",
+      cognition:"先给出你的标准，很多犹豫会立刻消失。",
+      closure:"把不合时宜的部分关掉，你会轻很多。"
+    };
+    var m = tone==="poetic" ? mapPoetic : tone==="fiery" ? mapFiery : mapCalm;
+    return m[dom];
   }
-
-  function endingBy(trend, cards, category){
+  function endingBy(trend, cards, category, tone){
     var has = function(ids){ return cards.some(function(c){ return ids.indexOf(c.id)>=0; }); };
     var endType="温和收束";
     if(has([13,16,20,21])) endType="转化与收尾";
@@ -400,7 +453,6 @@
       "情绪与理解":"当感受被好好述说，很多‘要不要’都会自己找到答案。",
       "判断与取舍":"当标准被明确，选择本身就不再沉重。"
     };
-    // 结合分类微调一句
     var hintMap={
       "情感":"关系需要被看见，也需要被允许呼吸。",
       "事业":"进度之外，稳定的节律同样重要。",
@@ -410,27 +462,28 @@
       "人际":"边界清晰，连接才不会紧绷。",
       "其他":"问题被拆小，它就有了被解决的路径。"
     };
-    return "【收尾剧】\n"+tail[endType]+"\n— "+(hintMap[category]||hintMap["其他"]);
+    var suffix = tone==="fiery" ? "给自己一个明确的时间点，让行动有落地的声响。" :
+                 tone==="poetic" ? "请在夜深时与自己对话，答案常在沉静处浮出。" : "";
+    return "【收尾剧】\n"+tail[endType]+"\n— "+(hintMap[category]||hintMap["其他"])+(suffix?("\n"+suffix):"");
   }
-
-  function buildStory(pack, category){
+  function buildStory(pack, category, tone){
     if(!pack||!pack.cards||!pack.cards.length) return "（暂无可生成的故事）";
     var t = trendOf(pack.cards);
-    var bg = "【叙事背景】\n"+(BG[category]||BG["其他"])+"\n（主导语义："+t.order[0]+"）";
+    var bg = "📖 【叙事背景】\n"+(BG[category]||BG["其他"])+"\n（主导语义："+t.order[0]+"）";
 
     var lines = pack.cards.map(function(c, i){
       var pos = roleName(pack.mode,i);
       var neu = MEANING[c.id] ? (c.reversed?MEANING[c.id].rev:MEANING[c.id].upr) : "";
-      var dir = directionLine(c);
-      var sen = sensoryLine(c);
-      return "— "+pos+"｜"+c.cn+(c.reversed?"（逆位）":"")+"\n"+
+      var dir = directionLine(c, tone);
+      var sen = sensoryLine(c, tone);
+      return "🎴 "+pos+"｜"+tagIcon(c)+" "+c.cn+(c.reversed?"（逆位）":"")+"\n"+
              "  · 牌面描述："+neu+"\n"+
              "  · 关注点："+dir+"\n"+
              "  · 氛围感："+sen;
     }).join("\n\n");
 
-    var end = endingBy(t, pack.cards, category);
-    return bg+"\n\n【剧情展开】\n"+lines+"\n\n"+end;
+    var end = "🌅 "+endingBy(t, pack.cards, category, tone);
+    return bg+"\n\n🎬 【剧情展开】\n"+lines+"\n\n"+end+"\n\n（注：此叙事用于自我观察与梳理，不构成结果性预测。）";
   }
 
   // ====== 动作 ======
@@ -439,30 +492,34 @@
     var pack=draw(mode);
     lastPack={mode:mode, allowRev:true, cards:pack.cards, timestamp:ts(), note:note, category:category};
     renderResult(pack); pushHist(lastPack);
-    q("storyBox").textContent="（点击“展开故事模式”生成情境背景 / 剧情展开 / 收尾剧）";
-    q("storyBox").dataset.filled="0";
+    var banner=q("drawBanner"); banner.classList.add("show"); setTimeout(()=>banner.classList.remove("show"), 3000);
+    var box=q("storyBox"); box.textContent="（点击“展开故事模式”生成情境背景 / 剧情展开 / 收尾剧）"; box.classList.add('muted'); box.dataset.filled="0";
+    window.scrollTo({top:document.querySelector('#result').offsetTop-12, behavior:'smooth'});
   }
 
   function clearAllHistory(){
     if (!confirm("确认清空所有历史记录吗？此操作不可恢复。")) return;
     localStorage.removeItem(HKEY);
     renderHistory();
-    var box = q("historyList"); if (box) box.innerHTML = '<div class="muted" style="text-align:center;opacity:.8">🗑️ 历史记录已清空</div>';
+    var box = q("historyList"); if (box) box.innerHTML = '<div class="muted" style="text-align:center;opacity:.8">🧹 历史记录已清空</div>';
     var info = q("pageInfo"); if (info) info.textContent = '0 / 1';
+    toast("历史记录已清空");
   }
 
   // ====== 事件绑定 ======
   window.addEventListener("DOMContentLoaded", function(){
     try{
+      // 主题/主色
       loadTheme(); loadBrand(); initCategoryMemory();
-
       q("brandPick").addEventListener("change", function(e){ applyBrandClass(e.target.value); });
       q("themeToggle").addEventListener("click", toggleTheme);
 
+      // 抽牌/重抽/清空结果
       q("draw").addEventListener("click", doDraw);
       q("redraw").addEventListener("click", doDraw);
-      q("reset").addEventListener("click", function(){ q("cards").innerHTML=""; q("storyBox").textContent="（已清空结果）"; q("storyBox").dataset.filled="0"; });
+      q("reset").addEventListener("click", function(){ q("cards").innerHTML=""; q("storyBox").textContent="（已清空结果）"; q("storyBox").dataset.filled="0"; toast("已清空结果"); });
 
+      // 解读/关键词切换
       q("toggleExplain").addEventListener("click", function(){
         SHOW_EXPLAIN=!SHOW_EXPLAIN;
         this.textContent=SHOW_EXPLAIN?"隐藏解读":"查看解读（中性）";
@@ -474,51 +531,57 @@
         renderResult({mode:q("mode").value, cards:lastPack?lastPack.cards:[]});
       });
 
+      // 故事模式 + 语气
       q("storyBtn").addEventListener("click", function(){
-        if(!lastPack) return alert("尚无结果。");
-        var s = buildStory(lastPack, q("category").value);
-        q("storyBox").textContent = s;
-        q("storyBox").dataset.filled="1";
-        q("storyBox").classList.remove("muted");
+        if(!lastPack) return toast("尚无结果，先抽牌吧");
+        var tone=q("tonePick").value, s = buildStory(lastPack, q("category").value, tone);
+        var sb=q("storyBox"); sb.textContent = s; sb.dataset.filled="1"; sb.classList.remove("muted"); sb.classList.add("fade-in");
+        window.scrollTo({top:sb.parentElement.offsetTop-8, behavior:'smooth'});
       });
 
+      // 导出菜单开合
+      var menu=q("exportMenu");
+      menu.querySelector('.menu-btn').addEventListener('click', ()=> menu.classList.toggle('show'));
+      document.addEventListener('click', (e)=>{ if(!menu.contains(e.target)) menu.classList.remove('show'); });
+
+      // 复制/导出
       q("copyStory").addEventListener("click", function(){
-        if(q("storyBox").dataset.filled!=="1") return alert("请先点击“展开故事模式”。");
-        navigator.clipboard.writeText(q("storyBox").textContent).then(function(){alert("故事已复制")}).catch(function(){alert("复制失败")});
+        if(q("storyBox").dataset.filled!=="1") return toast("请先点击“展开故事模式”");
+        navigator.clipboard.writeText(q("storyBox").textContent).then(()=>toast("故事已复制")).catch(()=>toast("复制失败"));
       });
-
       q("copyMd").addEventListener("click", function(){
-        if(!lastPack) return alert("尚无结果。");
+        if(!lastPack) return toast("尚无结果");
         var md=toMD(lastPack);
-        navigator.clipboard.writeText(md).then(function(){alert("已复制 Markdown")}).catch(function(){alert("复制失败")});
+        navigator.clipboard.writeText(md).then(()=>toast("Markdown 已复制")).catch(()=>toast("复制失败"));
       });
       q("exportReport").addEventListener("click", function(){
-        if(!lastPack) return alert("尚无结果。");
+        if(!lastPack) return toast("尚无结果");
         var name = "Tarot_"+ (lastPack.category||"未分类") +"_"+ lastPack.timestamp.replace(/[: ]/g,"-") + ".md";
-        download(name, toMD(lastPack));
+        download(name, toMD(lastPack)); toast("已导出 Markdown");
       });
       q("exportCSV").addEventListener("click", function(){
-        var list=applyFilter(loadHist()); if(!list.length) return alert("暂无可导出的历史。");
+        var list=applyFilter(loadHist()); if(!list.length) return toast("暂无可导出的历史");
         var head=["timestamp","mode","category","allowReversed","cards","note"];
         var rows=list.map(function(r){
           var tags=positionTags(r.mode);
           var cs=r.cards.map(function(c,i){return tags[i]+":"+c.cn+(c.reversed?"(逆)":"");}).join(" / ");
           return [r.timestamp,r.mode,r.category,"Y",cs,r.note||""].map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(",");
         });
-        download("tarot_history.csv", head.join(",")+"\n"+rows.join("\n"), "text/csv;charset=utf-8");
+        download("tarot_history.csv", head.join(",")+"\n"+rows.join("\n"), "text/csv;charset=utf-8"); toast("已导出 CSV");
       });
       q("exportJSON").addEventListener("click", function(){
-        var list=applyFilter(loadHist()); if(!list.length) return alert("暂无可导出的历史。");
-        download("tarot_history.json", JSON.stringify(list,null,2), "application/json");
+        var list=applyFilter(loadHist()); if(!list.length) return toast("暂无可导出的历史");
+        download("tarot_history.json", JSON.stringify(list,null,2), "application/json"); toast("已导出 JSON");
       });
 
+      // 历史过滤/分页/清空
       q("prevPage").addEventListener("click", function(){ CUR=Math.max(1, CUR-1); renderHistory(); });
       q("nextPage").addEventListener("click", function(){ CUR=CUR+1; renderHistory(); });
       q("filterKw").addEventListener("input", function(){ CUR=1; renderHistory(); });
       q("filterCat").addEventListener("change", function(){ CUR=1; renderHistory(); });
-
       q("clearHistory").addEventListener("click", clearAllHistory);
 
+      // 初始化
       renderHistory();
     }catch(err){
       alert("初始化错误: "+err.message);
@@ -529,5 +592,4 @@
 </script>
 </body>
 </html>
-
 
